@@ -1,0 +1,27 @@
+{
+  "cSpell.ignorePaths": [
+    "coverage",
+    "extensions.json",
+    "node_modules",
+    "settings.json"
+  ],
+  "cSpell.words": [
+    "composables",
+    "datetime",
+    "Parens",
+    "Pinia",
+    "tabindex",
+    "vite",
+    "vitepress",
+    "vuejs",
+    "vuetify",
+    "vueuse",
+    "vuex",
+    "webfontloader"
+  ],
+  "editor.codeActionsOnSave": {
+    "source.organizeImports": true
+  },
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.formatOnSave": true
+}
