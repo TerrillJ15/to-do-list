@@ -9,20 +9,10 @@ const COLUMNS = [
 ];
 
 /**
- * Array of stored row items. Each row item is a @type {Row} object.
+ * Array of stored row items. Each row item is a @type {Task} object.
+ * @type {Task} = { id: number, content: string, completed: boolean, due: datetime, updated_at: datetime, created_at: datetime }
  */
-let data = [
-  {
-    id: 0,
-    content: 'Test 1',
-    completed: false,
-  },
-  {
-    id: 1,
-    content: 'Test 2',
-    completed: true,
-  },
-];
+let data = [];
 
 /**
  * Called is when the page is loaded.
@@ -30,11 +20,23 @@ let data = [
  * Renders the table.
  */
 window.onload = function () {
-  const storeData = window.localStorage.getItem('to-do-list');
-  if (storeData) {
-    data = JSON.parse(storeData);
-  }
   renderTable();
+  $(document).ready(function () {
+    $.ajax({
+      type: 'GET',
+      url: 'https://fewd-todolist-api.onrender.com/tasks?api_key=215',
+      dataType: 'json',
+      success: function (response, _textStatus) {
+        if (response && response.tasks) {
+          data = response.tasks;
+        }
+        renderTable();
+      },
+      error: function (_request, _textStatus, errorMessage) {
+        console.log(errorMessage);
+      },
+    });
+  });
 };
 
 /**
@@ -59,11 +61,11 @@ function renderData() {
  * will be formatted if desired. Each row
  * will have a mark complete and delete button at the end.
  *
- * @param {Row} row Current row with the values.
+ * @param {Task} row Current row with the values.
  */
 function renderRow(row) {
-  const rowId = `row-${row.id}`;
-  $('tbody').append(`<tr id="${rowId}"></tr>`);
+  const taskId = `row-${row.id}`;
+  $('tbody').append(`<tr id="${taskId}"></tr>`);
   for (let i = 0; i < COLUMNS.length; i++) {
     $(`#row-${row.id}`).append(
       `<td id="cell-${row.id}-${COLUMNS[i].value}" class="${
@@ -84,7 +86,7 @@ function renderRow(row) {
             class="btn btn-sm btn-primary"
             onclick="toggleCompleted(${row.id})"
         >
-            Mark&nbsp;Complete
+            ${row.completed ? 'Completed' : 'Active'}
         </button>
     </td>
     <td style="width: 1%">
@@ -116,32 +118,72 @@ function addRow() {
   }
   $('#row-add > td').css('background-color', 'white');
 
-  const row = {
-    id: Date.now(),
-    content: toDo,
-    completed: false,
-  };
-  data.push(row);
-  renderRow(row);
-  updateStoredData();
-
-  $('#add-to-do').val('');
+  $.ajax({
+    type: 'POST',
+    url: 'https://fewd-todolist-api.onrender.com/tasks?api_key=215',
+    contentType: 'application/json',
+    dataType: 'json',
+    data: JSON.stringify({
+      task: {
+        content: toDo,
+      },
+    }),
+    success: function (response) {
+      if (response && response.task) {
+        data.push(response.task);
+        renderRow(response.task);
+        $('#add-to-do').val('');
+      }
+    },
+    error: function (_request, _textStatus, errorMessage) {
+      console.log(errorMessage);
+    },
+  });
 }
 
 /**
- * Remove the row for the provided rowId.
+ * Remove the task for the provided taskId.
  *
- * @param {Number} rowId ID of the row.
+ * @param {Number} taskId ID of the task.
  */
-function deleteRow(rowId) {
-  $(`#row-${rowId}`).remove();
-  data = data.filter(r => r.id !== rowId);
-  updateStoredData();
+function deleteRow(taskId) {
+  $.ajax({
+    type: 'DELETE',
+    url: `https://fewd-todolist-api.onrender.com/tasks/${taskId}?api_key=215`,
+    success: function (response) {
+      if (response.success) {
+        $(`#row-${taskId}`).remove();
+        data = data.filter(r => r.id !== taskId);
+      }
+    },
+    error: function (_request, _textStatus, errorMessage) {
+      console.log(errorMessage);
+    },
+  });
 }
 
-/**
- * Updates the data in the local storage.
- */
-function updateStoredData() {
-  window.localStorage.setItem('to-do-list', JSON.stringify(data));
+function toggleCompleted(taskId) {
+  const index = data.findIndex(t => t.id === taskId);
+  let task = data[index];
+  $.ajax({
+    type: 'PUT',
+    url: `https://fewd-todolist-api.onrender.com/tasks/${task.id}/${
+      task.completed ? 'mark_active' : 'mark_complete' // toggle
+    }?api_key=215`,
+    dataType: 'json',
+    success: function (response, _textStatus) {
+      // replace old task with new task
+      task = response.task;
+      data[index] = task;
+      // update button state for task
+      if (response.task.completed) {
+        $(`#cell-${task.id}-completed`).html('Completed');
+      } else {
+        $(`#cell-${task.id}-completed`).html('Active');
+      }
+    },
+    error: function (_request, _textStatus, errorMessage) {
+      console.log(errorMessage);
+    },
+  });
 }
