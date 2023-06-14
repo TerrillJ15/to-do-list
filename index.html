@@ -41,6 +41,10 @@
       href="css/custom.css"
       rel="stylesheet"
     />
+    <script
+      src="https://kit.fontawesome.com/e067495424.js"
+      crossorigin="anonymous"
+    ></script>
   </head>
   <body>
     <div class="container bg">
@@ -56,14 +60,17 @@
               />
             </td>
             <td style="width: 1%">
-              <button
-                id="add-button"
-                type="button"
-                class="btn btn-sm btn-primary"
-                onclick="addRow()"
+              <span
+                class="nav-item rounded-pill btn btn-primary"
+                title="Click to add."
               >
-                Add
-              </button>
+                <a
+                  class="nav-link"
+                  href="#"
+                  onclick="addRow()"
+                  ><i class="fas fa-plus"></i
+                ></a>
+              </span>
             </td>
           </tr>
         </thead>

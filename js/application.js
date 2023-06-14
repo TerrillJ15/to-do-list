@@ -88,22 +88,22 @@ function renderRow(row) {
       ? 'Marked Completed. Click to make active again.'
       : 'Currently Active. Click to mark as complete.'
   }">
-      <input id="cb-${row.id}-completed" type="checkbox" checked="${
-    row.completed
-  }" onclick="toggleCompleted(${row.id})">
+      <input id="cb-${row.id}-completed" type="checkbox"${
+    row.completed ? ' checked="true"' : ''
+  } onclick="toggleCompleted(${row.id})">
       <span class="label"></span>
       <span class="checkbox"></span>
       <span class="checkmark"></span>
     </label>
     <td style="width: 1%">
-        <button
-            id="cell-${row.id}-delete"
-            type="button"
-            class="btn btn-sm btn-danger"
-            onclick="deleteRow(${row.id})"
-        >
-            Delete
-        </button>
+      <span class="nav-item rounded-pill btn btn-lg btn-outline-danger py-0 px-1 border-0" title="Click to delete.">
+        <a
+          class="nav-link"
+          href="#"
+          onclick="deleteRow(${row.id})"
+          ><i class="fas fa-trash"></i
+        ></a>
+      </span>
     </td>
   `);
 }
