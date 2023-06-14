@@ -33,6 +33,7 @@ window.onload = function () {
         renderTable();
       },
       error: function (_request, _textStatus, errorMessage) {
+        alert('Unable to retrieve tasks.');
         console.log(errorMessage);
       },
     });
@@ -80,15 +81,20 @@ function renderRow(row) {
   }
   $(`#row-${row.id}`).append(`
     <td style="width: 1%">
-        <button
-            id="cell-${row.id}-completed"
-            type="button"
-            class="btn btn-sm btn-primary"
-            onclick="toggleCompleted(${row.id})"
-        >
-            ${row.completed ? 'Completed' : 'Active'}
-        </button>
-    </td>
+    <label id="cb-label-${
+      row.id
+    }-completed" class="checkbox-container" title="${
+    row.completed
+      ? 'Marked Completed. Click to make active again.'
+      : 'Currently Active. Click to mark as complete.'
+  }">
+      <input id="cb-${row.id}-completed" type="checkbox" checked="${
+    row.completed
+  }" onclick="toggleCompleted(${row.id})">
+      <span class="label"></span>
+      <span class="checkbox"></span>
+      <span class="checkmark"></span>
+    </label>
     <td style="width: 1%">
         <button
             id="cell-${row.id}-delete"
@@ -136,6 +142,7 @@ function addRow() {
       }
     },
     error: function (_request, _textStatus, errorMessage) {
+      alert('Unable to add the task.');
       console.log(errorMessage);
     },
   });
@@ -157,6 +164,7 @@ function deleteRow(taskId) {
       }
     },
     error: function (_request, _textStatus, errorMessage) {
+      alert('Unable to delete the task.');
       console.log(errorMessage);
     },
   });
@@ -176,13 +184,16 @@ function toggleCompleted(taskId) {
       task = response.task;
       data[index] = task;
       // update button state for task
-      if (response.task.completed) {
-        $(`#cell-${task.id}-completed`).html('Completed');
-      } else {
-        $(`#cell-${task.id}-completed`).html('Active');
-      }
+      $(`#cb-${task.id}-completed`).prop('checked', task.completed);
+      $(`#cb-label-${task.id}-completed`).prop(
+        'title',
+        task.completed
+          ? 'Marked Completed. Click to make active again.'
+          : 'Currently Active. Click to mark as complete.',
+      );
     },
     error: function (_request, _textStatus, errorMessage) {
+      alert('Unable to toggle between completed and active.');
       console.log(errorMessage);
     },
   });
