@@ -14,6 +14,9 @@ const COLUMNS = [
  */
 let data = [];
 
+/** The value to filter on. -1 is all and boolean is for the completed state. */
+let filter = -1;
+
 /**
  * Called is when the page is loaded.
  * Loads data if previously used.
@@ -41,18 +44,22 @@ window.onload = function () {
 };
 
 /**
- * Renders the dynamic aspects of the table which includes the data and footer tables.
+ * Renders the dynamic aspects of the table which includes the data.
  */
 function renderTable() {
   renderData();
 }
 
 /**
- * Renders all the data as table rows.
+ * Renders all the data matching the current filter as table rows.
  */
 function renderData() {
-  for (let i = 0; i < data.length; i++) {
-    renderRow(data[i]);
+  let displayData = data;
+  if (filter !== -1) {
+    displayData = data.filter(d => d.completed === filter);
+  }
+  for (let i = 0; i < displayData.length; i++) {
+    renderRow(displayData[i]);
   }
 }
 
@@ -170,6 +177,14 @@ function deleteRow(taskId) {
   });
 }
 
+/**
+ * Toggles the completed state for the provided task.
+ * Performs a request to change the completed state.
+ * Will make sure the rendered task reflects the request state.
+ * If a filter is applied, then the task will be removed when the completed state changes.
+ *
+ * @param {Number} taskId The ID of the task.
+ */
 function toggleCompleted(taskId) {
   const index = data.findIndex(t => t.id === taskId);
   let task = data[index];
@@ -183,18 +198,37 @@ function toggleCompleted(taskId) {
       // replace old task with new task
       task = response.task;
       data[index] = task;
-      // update button state for task
-      $(`#cb-${task.id}-completed`).prop('checked', task.completed);
-      $(`#cb-label-${task.id}-completed`).prop(
-        'title',
-        task.completed
-          ? 'Marked Completed. Click to make active again.'
-          : 'Currently Active. Click to mark as complete.',
-      );
+
+      // update the view
+      if (filter !== -1 && filter !== task.completed) {
+        // if the filter is applied and the state changed, then remove it.
+        $(`#row-${task.id}`).remove();
+      } else {
+        // update button state for task
+        $(`#cb-${task.id}-completed`).prop('checked', task.completed);
+        $(`#cb-label-${task.id}-completed`).prop(
+          'title',
+          task.completed
+            ? 'Marked Completed. Click to make active again.'
+            : 'Currently Active. Click to mark as complete.',
+        );
+      }
     },
     error: function (_request, _textStatus, errorMessage) {
       alert('Unable to toggle between completed and active.');
       console.log(errorMessage);
     },
   });
+}
+
+/**
+ * Handles when the selection of the filter toggle is made.
+ * Clears the table and rerenders based on the filter.
+ *
+ * @param {-1 | boolean} val The value of filter on.
+ */
+function setFilter(val) {
+  filter = val;
+  $('tbody').empty();
+  renderTable();
 }

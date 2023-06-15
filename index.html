@@ -73,6 +73,46 @@
               </span>
             </td>
           </tr>
+          <tr>
+            <td colspan="3">
+              <div
+                class="btn-group btn-group-toggle"
+                data-toggle="buttons"
+              >
+                <label class="btn btn-outline-success">
+                  <input
+                    type="radio"
+                    name="options"
+                    id="option1"
+                    autocomplete="off"
+                    checked
+                    onclick="setFilter(-1)"
+                  />
+                  All
+                </label>
+                <label class="btn btn-outline-success">
+                  <input
+                    type="radio"
+                    name="options"
+                    id="option2"
+                    autocomplete="off"
+                    onclick="setFilter(true)"
+                  />
+                  Completed
+                </label>
+                <label class="btn btn-outline-success">
+                  <input
+                    type="radio"
+                    name="options"
+                    id="option3"
+                    autocomplete="off"
+                    onclick="setFilter(false)"
+                  />
+                  Active
+                </label>
+              </div>
+            </td>
+          </tr>
         </thead>
         <tbody></tbody>
       </table>
