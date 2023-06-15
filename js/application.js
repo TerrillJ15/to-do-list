@@ -19,11 +19,28 @@ let filter = -1;
 
 /**
  * Called is when the page is loaded.
+ * Loads the filter value if previously set.
  * Loads data if previously used.
  * Renders the table.
  */
 window.onload = function () {
-  renderTable();
+  // load the stored filter if present; -1 is default
+  let storedFilter = localStorage.getItem('to-do-list-filter');
+  if (storedFilter !== undefined) {
+    filter =
+      storedFilter === 'true' ? true : storedFilter === 'false' ? false : -1;
+  }
+
+  // check the filter button that is loaded
+  let filterName = 'filter-all';
+  if (filter === true) {
+    filterName = 'filter-completed';
+  } else if (filter === false) {
+    filterName = 'filter-active';
+  }
+  $(`#${filterName}`).prop('checked', true);
+
+  // retrieve the task and render the table
   $(document).ready(function () {
     $.ajax({
       type: 'GET',
@@ -239,4 +256,5 @@ function setFilter(val) {
   filter = val;
   $('tbody').empty();
   renderTable();
+  localStorage.setItem('to-do-list-filter', filter);
 }
