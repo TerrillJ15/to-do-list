@@ -120,7 +120,7 @@ function renderRow(row) {
  * If invalid then the inputs are highlighted red.
  * When an add is successful then inputs are reset.
  */
-function addRow() {
+async function addRow() {
   // get values from the inputs
   const toDo = $('#add-to-do').val();
 
@@ -131,7 +131,11 @@ function addRow() {
   }
   $('#row-add > td').css('background-color', 'white');
 
-  $.ajax({
+  // disable add fields and button until completed
+  $('#add-to-do').prop('disabled', true);
+  $('#btn-add').addClass('disabled');
+
+  await $.ajax({
     type: 'POST',
     url: 'https://fewd-todolist-api.onrender.com/tasks?api_key=215',
     contentType: 'application/json',
@@ -153,6 +157,10 @@ function addRow() {
       console.log(errorMessage);
     },
   });
+
+  // enable add fields and button until completed
+  $('#add-to-do').prop('disabled', false);
+  $('#btn-add').removeClass('disabled');
 }
 
 /**
