@@ -10,15 +10,17 @@ All the Tasks of the To Do List app are on the server. When a task is created, d
 
 
 ## Scope
+
 We will keep our To Do List features at the bare minimum. Here is the criteria:
-###Minimum requirement
+
+### Minimum requirement
 1. A list of tasks rendered in the DOM based on data from the ATDAPI server.
 2. Each task has a description, a remove button, and a mark complete/active button.
 3. An input element and a button that lets user add a new task.
 
 Add personalizations to this assignment to make it your own.
 
-###Bonus feature
+### Bonus feature
 1. A toggle to show Active/Complete/All tasks only
 2. Sort the tasks by ID or created_at date
 
